@@ -20,8 +20,8 @@ namespace Connect4Coursework
 
         private void PlayerVSPlayer(object sender, EventArgs e)
         {
-            GameScreenPlayerVsPlayer gamescreen = new GameScreenPlayerVsPlayer();
-            gamescreen.Show();
+            GameScreenPlayerVsPlayer playerVsPlayer = new GameScreenPlayerVsPlayer();
+            playerVsPlayer.Show();
             this.Hide();
 
         }

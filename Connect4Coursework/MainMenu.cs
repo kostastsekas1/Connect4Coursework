@@ -20,9 +20,13 @@ namespace Connect4Coursework
 
         private void PlayerVSPlayer(object sender, EventArgs e)
         {
-            GameScreenPlayerVsPlayer playerVsPlayer = new GameScreenPlayerVsPlayer();
-            playerVsPlayer.Show();
+            var formPopup = new PlayerNames();
             this.Hide();
+            formPopup.ShowDialog();
+
+            //GameScreenPlayerVsPlayer playerVsPlayer = new GameScreenPlayerVsPlayer();
+            //playerVsPlayer.Show();
+
 
         }
 
@@ -44,6 +48,11 @@ namespace Connect4Coursework
         private void QuitGameOnFormClosed(object sender, FormClosedEventArgs e)
         {
             Application.Exit();
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

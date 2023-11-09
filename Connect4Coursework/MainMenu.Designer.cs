@@ -48,6 +48,7 @@ namespace Connect4Coursework
             label1.TabIndex = 0;
             label1.Text = "CONNECT 4";
             label1.TextAlign = ContentAlignment.TopCenter;
+            label1.Click += label1_Click;
             // 
             // button1
             // 

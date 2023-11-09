@@ -20,9 +20,9 @@ namespace Connect4Coursework
 
         private void PlayerVSPlayer(object sender, EventArgs e)
         {
-            var formPopup = new PlayerNames();
+            var playerNames = new PlayerNames();
             this.Hide();
-            formPopup.ShowDialog();
+            playerNames.ShowDialog();
 
             //GameScreenPlayerVsPlayer playerVsPlayer = new GameScreenPlayerVsPlayer();
             //playerVsPlayer.Show();
@@ -37,7 +37,9 @@ namespace Connect4Coursework
 
         private void ScoresShow(object sender, EventArgs e)
         {
-
+            var scores = new Scores();
+            this.Hide();
+            scores.Show();
         }
 
         private void QuitGame(object sender, EventArgs e)

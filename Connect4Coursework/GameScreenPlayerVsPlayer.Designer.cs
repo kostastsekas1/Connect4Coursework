@@ -34,6 +34,7 @@
             Player1Score = new Label();
             Player2Score = new Label();
             Player2Label = new Label();
+            reset = new Button();
             SuspendLayout();
             // 
             // Player1Label
@@ -90,6 +91,17 @@
             Player2Label.Text = "Player 2";
             Player2Label.TextAlign = ContentAlignment.MiddleCenter;
             // 
+            // reset
+            // 
+            reset.Anchor = AnchorStyles.None;
+            reset.Location = new Point(389, 586);
+            reset.Name = "reset";
+            reset.Size = new Size(116, 23);
+            reset.TabIndex = 5;
+            reset.Text = "Reset Board";
+            reset.UseVisualStyleBackColor = true;
+            reset.Click += resetButton_Click;
+            // 
             // GameScreenPlayerVsPlayer
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -98,6 +110,7 @@
             BackgroundImage = Properties.Resources.blue_screen_that_says_blue_it;
             BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(934, 621);
+            Controls.Add(reset);
             Controls.Add(Player2Score);
             Controls.Add(Player2Label);
             Controls.Add(Player1Score);
@@ -121,5 +134,6 @@
 
         private Label Player2Score;
         private Label Player2Label;
+        private Button reset;
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Security.AccessControl;
+using System.Text.Json;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Connect4Coursework
@@ -17,13 +18,15 @@ namespace Connect4Coursework
         private static int rectangleWidth = 330;  // Width of rectangle
         private static int rectangleHeight = 330; // Height of rectangle
 
-        private int Score1 ;
-        private int Score2 ;
+        private int Score1;
+        private int Score2;
         private string winhow;
 
         public PlayerNames playerNames;
+        private string encryptionSecretKey = "word";
 
-        private enum check { vertical, horizontal, diagonalLeft, diagonalRight }
+
+        private enum CheckDirection { vertical, horizontal, diagonalLeft, diagonalRight }
 
         public GameScreenPlayerVsPlayer()
         {
@@ -35,23 +38,31 @@ namespace Connect4Coursework
             Score1 = 0;
             Score2 = 0;
             winhow = "";
-            
 
         }
         private void GameScreenPlayerVsPlayer_Load(object sender, EventArgs e)
         {
             if (playerNames != null)
             {
+                if (((PlayerNames)playerNames).Player1Name.Text != "")
+                {
+                    Player1Label.Text = ((PlayerNames)playerNames).Player1Name.Text;
+                }
+                else
+                {
+                    Player1Label.Text = "Player 1";
+                }
 
-                Player1Label.Text = ((PlayerNames)playerNames).Player1Name.Text;
-                Player2Label.Text = ((PlayerNames)playerNames).Player2Name.Text;
+                if (((PlayerNames)playerNames).Player2Name.Text != "")
+                {
+                    Player2Label.Text = ((PlayerNames)playerNames).Player2Name.Text;
+                }
+                else
+                {
+                    Player2Label.Text = "Player 2";
+                }
+            }
 
-            }
-            else
-            {
-                Player1Label.Text = "Player 1";
-                Player2Label.Text = "Player 2";
-            }
         }
 
         private void BackToMainMenu(object sender, FormClosedEventArgs e)
@@ -59,8 +70,35 @@ namespace Connect4Coursework
             MainMenu menu = new MainMenu();
             menu.Show();
 
-            //  add saving fucntion here 
+            //save function more
+            string fullpath = Path.Combine(Application.UserAppDataPath, "scores.txt");
+
+            string ScoreStore = string.Format("| {0} : {2} - {1} : {3} |\n",
+                                Player1Label.Text, Player2Label.Text, Score1.ToString(), Score2.ToString());
+
+            ScoreStore = JsonSerializer.Serialize<string>(ScoreStore);
+
+            ScoreStore = EncryptDecrypt(ScoreStore);
+
+            using (FileStream fileStream = new FileStream(fullpath, FileMode.Create))
+            {
+                using (StreamWriter writer = new StreamWriter(fileStream))
+                {
+                    writer.Write(ScoreStore);
+                }
+            }
         }
+        private string EncryptDecrypt(string data)
+        {
+            string EncryptedDecryptedData = "";
+            for (int i = 0; i < data.Length; i++)
+            {
+                EncryptedDecryptedData += (char)(data[i] ^ encryptionSecretKey[i % encryptionSecretKey.Length]);
+            }
+            return EncryptedDecryptedData;
+        }
+
+
         #region Painting the board and the grid
         private void GameScreenPlayerVsPlayer_Paint(object sender, PaintEventArgs e)
         {
@@ -137,21 +175,23 @@ namespace Connect4Coursework
                     if (winner == 1)
                     {
                         Player1Score.Text = (Score1 + 1).ToString();
+                        Score1++;
                         winnername = Player1Label.Text;
                     }
                     else
                     {
                         Player2Score.Text = (Score2 + 1).ToString();
                         winnername = Player2Label.Text;
+                        Score2++;
 
                     }
 
-                    Array.Clear(board, 0, board.Length);
 
-                    DialogResult GameoverBox = MessageBox.Show(winnername + " won by connecting 4 "+winhow+"\nWant To start a new game?", "Game Over", MessageBoxButtons.YesNo);
+
+                    DialogResult GameoverBox = MessageBox.Show(winnername + " won by connecting 4 " + winhow + "\nWant To start a new game?", "Game Over", MessageBoxButtons.YesNo);
                     if (GameoverBox == DialogResult.Yes)
                     {
-                        clearBoard(centerX, centerY);
+                        clearBoard();
                     }
                     else if (GameoverBox == DialogResult.No)
                     {
@@ -201,8 +241,10 @@ namespace Connect4Coursework
             return -1;
         }
 
-        private void DrawState(int centerX, int centerY)
+        private void DrawState()
         {
+            int centerX = ClientSize.Width / 2;
+            int centerY = ClientSize.Height / 3;
             Update();
             DoubleBuffered = true;
 
@@ -238,13 +280,17 @@ namespace Connect4Coursework
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            int centerX = ClientSize.Width / 2;
-            int centerY = ClientSize.Height / 3;
-            DrawState(centerX, centerY);
+
+            DrawState();
         }
 
-        private void clearBoard(int centerX, int centerY)
+        private void clearBoard()
         {
+            int centerX = ClientSize.Width / 2;
+            int centerY = ClientSize.Height / 3;
+
+            Array.Clear(board, 0, board.Length);
+
             for (int i = 0; i < board.GetLength(0); i++) // Loop through rows
             {
                 for (int j = 0; j < board.GetLength(1); j++) // Loop through columns
@@ -391,7 +437,7 @@ namespace Connect4Coursework
                 for (int column = 0; column < board.GetLength(1); column++)
                 {
 
-                    if (NumbersEqual(CheckingPlayerNumber, row, column, check.vertical))
+                    if (NumbersEqual(CheckingPlayerNumber, row, column, CheckDirection.vertical))
                     {
                         return CheckingPlayerNumber;
                     }
@@ -403,7 +449,7 @@ namespace Connect4Coursework
                 for (int column = 0; column < board.GetLength(1) - 3; column++)
                 {
 
-                    if (NumbersEqual(CheckingPlayerNumber, row, column, check.horizontal))
+                    if (NumbersEqual(CheckingPlayerNumber, row, column, CheckDirection.horizontal))
                     {
                         return CheckingPlayerNumber;
                     }
@@ -415,7 +461,7 @@ namespace Connect4Coursework
                 for (int column = 0; column < board.GetLength(1) - 3; column++)
                 {
 
-                    if (NumbersEqual(CheckingPlayerNumber, row, column, check.diagonalLeft))
+                    if (NumbersEqual(CheckingPlayerNumber, row, column, CheckDirection.diagonalLeft))
                     {
                         return CheckingPlayerNumber;
                     }
@@ -428,7 +474,7 @@ namespace Connect4Coursework
                 for (int column = 3; column < board.GetLength(1); column++)
                 {
 
-                    if (NumbersEqual(CheckingPlayerNumber, row, column, check.diagonalRight))
+                    if (NumbersEqual(CheckingPlayerNumber, row, column, CheckDirection.diagonalRight))
                     {
                         return CheckingPlayerNumber;
                     }
@@ -440,6 +486,10 @@ namespace Connect4Coursework
 
         }
         #endregion
-        
+
+        private void resetButton_Click(object sender, EventArgs e)
+        {
+            clearBoard();
+        }
     }
 }

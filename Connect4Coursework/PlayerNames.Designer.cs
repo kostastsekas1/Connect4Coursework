@@ -122,6 +122,7 @@
             Name = "PlayerNames";
             StartPosition = FormStartPosition.CenterParent;
             Text = "PlayerNames";
+            FormClosing += PlayerNames_FormClosing;
             ResumeLayout(false);
             PerformLayout();
         }

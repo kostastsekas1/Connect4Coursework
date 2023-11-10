@@ -22,10 +22,35 @@ namespace Connect4Coursework
 
         private void StartButton_Click(object sender, EventArgs e)
         {
+            if (invalidName(Player1Name.Text)  || invalidName(Player2Name.Text)) 
+            {
+                MessageBox.Show("The names cannot have ',' in them");
+                return;
+            }
+
             GameScreenPlayerVsPlayer playerVsPlayer = new GameScreenPlayerVsPlayer();
             playerVsPlayer.playerNames = this;
             playerVsPlayer.Show();
             this.Hide();
+        }
+
+        private void PlayerNames_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            e.Cancel = true;
+            
+        }
+
+        private bool invalidName(string name1)
+        {
+            foreach(char letter in name1)
+            {
+                if (letter == ',')
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
 

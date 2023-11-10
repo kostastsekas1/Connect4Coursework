@@ -1,4 +1,5 @@
 ﻿using System.Security.AccessControl;
+using System.Text;
 using System.Text.Json;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -67,27 +68,80 @@ namespace Connect4Coursework
 
         private void BackToMainMenu(object sender, FormClosedEventArgs e)
         {
-            MainMenu menu = new MainMenu();
-            menu.Show();
+           
 
             //save function more
+            save();
+        }
+
+        #region Save and Encryption
+        public void save()
+        {
             string fullpath = Path.Combine(Application.UserAppDataPath, "scores.txt");
 
-            string ScoreStore = string.Format("| {0} : {2} - {1} : {3} |\n",
+            string ScoreStore = string.Format("{0},{2},{1},{3}",
                                 Player1Label.Text, Player2Label.Text, Score1.ToString(), Score2.ToString());
 
-            ScoreStore = JsonSerializer.Serialize<string>(ScoreStore);
+            //string ScoreStore = "player 1,1,player 2,0";
+            StringBuilder alldata = new StringBuilder();
 
-            ScoreStore = EncryptDecrypt(ScoreStore);
-
-            using (FileStream fileStream = new FileStream(fullpath, FileMode.Create))
+            if (File.Exists(fullpath))
             {
-                using (StreamWriter writer = new StreamWriter(fileStream))
+                using (StreamReader reader = new StreamReader(fullpath))
                 {
-                    writer.Write(ScoreStore);
+
+                    string line = reader.ReadToEnd();
+                    line = EncryptDecrypt(line);
+                    //MessageBox.Show(line + " herefirst");
+
+                    line = line.TrimStart('"');
+                    line = line.TrimEnd('"');
+
+                    alldata.Append(line);
+                    alldata.Append(",");
+                }
+
+                alldata.Append(ScoreStore);
+                ScoreStore = alldata.ToString();
+                // MessageBox.Show(ScoreStore + " herefirst");
+                ScoreStore = JsonSerializer.Serialize<string>(ScoreStore);
+                ScoreStore = EncryptDecrypt(ScoreStore);
+
+                using (FileStream fileStream = new FileStream(fullpath, FileMode.OpenOrCreate))
+                {
+                    fileStream.Seek(0, SeekOrigin.Begin);
+
+                    using (StreamWriter writer = new StreamWriter(fileStream))
+                    {
+
+
+                        writer.Write(ScoreStore);
+                    }
                 }
             }
+            else
+            {
+                using (FileStream fileStream = new FileStream(fullpath, FileMode.OpenOrCreate))
+                {
+                    fileStream.Seek(0, SeekOrigin.Begin);
+
+                    using (StreamWriter writer = new StreamWriter(fileStream))
+                    {
+                        //MessageBox.Show(ScoreStore + " here");
+                        string headerfile = "Name, Score, Name,Score,";
+                        ScoreStore = headerfile+ ScoreStore ;
+                        ScoreStore = JsonSerializer.Serialize<string>(ScoreStore);
+                        ScoreStore = EncryptDecrypt(ScoreStore);
+
+                        writer.Write(ScoreStore);
+                    }
+                }
+            }
+            this.Hide();
+            MainMenu menu = new MainMenu();
+            menu.Show();
         }
+
         private string EncryptDecrypt(string data)
         {
             string EncryptedDecryptedData = "";
@@ -97,7 +151,7 @@ namespace Connect4Coursework
             }
             return EncryptedDecryptedData;
         }
-
+        #endregion
 
         #region Painting the board and the grid
         private void GameScreenPlayerVsPlayer_Paint(object sender, PaintEventArgs e)
@@ -195,8 +249,7 @@ namespace Connect4Coursework
                     }
                     else if (GameoverBox == DialogResult.No)
                     {
-                        MainMenu menu = new MainMenu();
-                        menu.Show();
+                        this.Close();
                     }
                 }
 

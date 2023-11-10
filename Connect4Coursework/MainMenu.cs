@@ -24,10 +24,6 @@ namespace Connect4Coursework
             this.Hide();
             playerNames.ShowDialog();
 
-            //GameScreenPlayerVsPlayer playerVsPlayer = new GameScreenPlayerVsPlayer();
-            //playerVsPlayer.Show();
-
-
         }
 
         private void PlayerVsComputer(object sender, EventArgs e)
@@ -49,7 +45,8 @@ namespace Connect4Coursework
 
         private void QuitGameOnFormClosed(object sender, FormClosedEventArgs e)
         {
-            Application.Exit();
+            Application.ExitThread();
+
         }
 
         private void label1_Click(object sender, EventArgs e)

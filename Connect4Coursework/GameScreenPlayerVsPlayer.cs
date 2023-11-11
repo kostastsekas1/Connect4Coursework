@@ -9,6 +9,8 @@ namespace Connect4Coursework
         private Rectangle[] columns;
         private int[,] board;
         private Stack<int[,]> BoardStack = new Stack<int[,]>();
+        //private Stack<int[,]> PossibleMoves = new Stack<int[,]>();
+
         private int turn; // it is 1 for  Player 1 , 2 for player 2 or 2 for computer 
 
         private int hoveredColumn = -1;
@@ -23,8 +25,11 @@ namespace Connect4Coursework
         private string winhow;
 
         public PlayerNames playerNames;
-        private string encryptionSecretKey = "word";
+        public bool playervsComputer;
+        public string difficulty;
 
+        private string encryptionSecretKey = "word";
+        private bool isplayerTurn;
 
         private enum CheckDirection { vertical, horizontal, diagonalLeft, diagonalRight }
 
@@ -39,6 +44,7 @@ namespace Connect4Coursework
             Score2 = 0;
             winhow = "";
             BoardStack.Clear();
+            isplayerTurn = true;
         }
 
         private void GameScreenPlayerVsPlayer_Load(object sender, EventArgs e)
@@ -62,15 +68,16 @@ namespace Connect4Coursework
                 {
                     Player2Label.Text = "Player 2";
                 }
-            }
 
+
+                playervsComputer = playerNames.playervscomputer;
+                difficulty = playerNames.difficulty;
+
+            }
         }
 
         private void BackToMainMenu(object sender, FormClosedEventArgs e)
         {
-
-
-            //save function more
             save();
         }
 
@@ -186,14 +193,14 @@ namespace Connect4Coursework
         #endregion
 
         #region Handle MouseClick
-        private void GameScreenPlayerVsPlayer_MouseClick(object sender, MouseEventArgs e)
+        private async void GameScreenPlayerVsPlayer_MouseClick(object sender, MouseEventArgs e)
         {
             int centerX = ClientSize.Width / 2;
             int centerY = ClientSize.Height / 3;
 
             int collumnnumber = CollumnNumber(e.Location);
             
-            if (collumnnumber != -1)
+            if (collumnnumber != -1 && isplayerTurn)
             {
                 SaveBoardState();
                 int rownumber = CheckForEmptyRow(collumnnumber);
@@ -207,7 +214,7 @@ namespace Connect4Coursework
                     }
                     board[rownumber, collumnnumber] = turn;
 
-
+                    /*
                     if (turn == 1)
                     {
                         using (Graphics tokens = this.CreateGraphics())
@@ -222,54 +229,141 @@ namespace Connect4Coursework
                             tokens.FillEllipse(Brushes.Green, centerX - 165 + 47 * collumnnumber, centerY - 165 + 47 * rownumber, 45, 45);
                         }
                     }
+                    */
                    
                 }
-                string winnername;
-                int winner = WinnerChecker(turn);
-                if (winner != -1)
+
+                winnerTurn(turn);
+
+                if (playervsComputer)
                 {
-                    BoardStack.Clear();
-                    if (winner == 1)
+                    //Todo: Make AI move
+                    if (difficulty == "Easy")
                     {
-                        Player1Score.Text = (Score1 + 1).ToString();
-                        Score1++;
-                        winnername = Player1Label.Text;
-                    }
-                    else
-                    {
-                        Player2Score.Text = (Score2 + 1).ToString();
-                        winnername = Player2Label.Text;
-                        Score2++;
+                        isplayerTurn =false;
+                        Random timetowait = new Random();
+                        int time = timetowait.Next(200, 500);
+                        await Task.Delay(time);
 
-                    }
+                        RandomMove(GetAllPossibleMoves());
 
-
-
-                    DialogResult GameoverBox = MessageBox.Show(winnername + " won by connecting 4 " + winhow + "\nWant To start a new game?", "Game Over", MessageBoxButtons.YesNo);
-                    if (GameoverBox == DialogResult.Yes)
-                    {
-                        clearBoard(true);
-                    }
-                    else if (GameoverBox == DialogResult.No)
-                    {
-                        this.Close();
+                        winnerTurn(2);
+                        isplayerTurn = true;
                     }
 
+                    else if (difficulty == "Hard")
+                    {
+                        //phda me
+                    }
                 }
 
                 if (turn == 1)
                 {
-                    turn = 2;
+                    if (!playervsComputer)
+                    {
+                        turn = 2;
+                    }
                 }
                 else if (turn == 2)
                 {
                     turn = 1;
                 }
             }
-            
+        }
+        private void winnerTurn(int turn)
+        {
+            string winnername;
+            int winner = WinnerChecker(turn);
+
+            if (winner != -1)
+            {
+                BoardStack.Clear();
+                if (winner == 1)
+                {
+                    Player1Score.Text = (Score1 + 1).ToString();
+                    Score1++;
+                    winnername = Player1Label.Text;
+                }
+                else
+                {
+                    Player2Score.Text = (Score2 + 1).ToString();
+                    winnername = Player2Label.Text;
+                    Score2++;
+                }
+
+                DialogResult GameoverBox = MessageBox.Show(winnername + " won by connecting 4 " + winhow + "\nWant To start a new game?", "Game Over", MessageBoxButtons.YesNo);
+                if (GameoverBox == DialogResult.Yes)
+                {
+                    clearBoard(true);
+                }
+                else if (GameoverBox == DialogResult.No)
+                {
+                    this.Close();
+                }
+            }
         }
         #endregion
 
+        #region AI implemenation
+        
+        private int[,] GetAllPossibleMoves()
+        {
+            int[,] AllPossibleMoves = new int[7,7];
+
+
+            for (int i = 0; i < 7; i++)
+            {
+                for (int j = 0; j < 7; j++)
+                {
+                    AllPossibleMoves[i, j] = -1;
+                }
+            }
+            for (int i = 0; i < board.GetLength(0); i++)
+            {
+                for (int j = 0; j < board.GetLength(1); j++) 
+                {
+                    int turns = board[i, j];
+                    
+                    if (turns == 0)
+                    {
+                        AllPossibleMoves[i, j] = turns;
+                    }
+
+                }
+            }
+            return AllPossibleMoves;
+        }
+
+        private void RandomMove(int[,] PossibleMoves)
+        {
+            bool MoveFound = false;
+            
+            while (!MoveFound)
+            {
+                Random randomCol = new Random();
+                int column =  randomCol.Next(PossibleMoves.GetLength(1)-1);
+                int rownumber = CheckForEmptyRow(column);
+                
+                if (rownumber != 0)
+                {
+                    if (PossibleMoves[rownumber, column] == 0)
+                    {
+                        board[rownumber, column] = 2;
+                        MoveFound = true;
+                    
+                    }
+                }
+
+            }
+            
+        }
+
+
+
+
+        #endregion
+        
+        
         #region Checking if collumn and row can receive token and ReDrawing the state of the board for refreshing with timer and clear board feature
         private int CollumnNumber(Point Mouse)
         {

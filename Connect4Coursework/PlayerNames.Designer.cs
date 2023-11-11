@@ -123,6 +123,7 @@
             StartPosition = FormStartPosition.CenterParent;
             Text = "PlayerNames";
             FormClosing += PlayerNames_FormClosing;
+            Load += PlayerNames_Load;
             ResumeLayout(false);
             PerformLayout();
         }

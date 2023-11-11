@@ -46,7 +46,7 @@ namespace Connect4Coursework
             label1.Padding = new Padding(0, 70, 0, 0);
             label1.Size = new Size(934, 621);
             label1.TabIndex = 0;
-            label1.Text = "CONNECT 4";
+            label1.Text = "Four In A row";
             label1.TextAlign = ContentAlignment.TopCenter;
             label1.Click += label1_Click;
             // 

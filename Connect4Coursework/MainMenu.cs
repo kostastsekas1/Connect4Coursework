@@ -2,16 +2,12 @@ namespace Connect4Coursework
 {
     public partial class MainMenu : Form
     {
+        public bool playervsComputer;
         public MainMenu()
         {
             InitializeComponent();
+            playervsComputer = false;
         }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
-
 
         private void MainMenu_Load(object sender, EventArgs e)
         {
@@ -20,7 +16,9 @@ namespace Connect4Coursework
 
         private void PlayerVSPlayer(object sender, EventArgs e)
         {
-            var playerNames = new PlayerNames();
+            playervsComputer = false;
+            PlayerNames playerNames = new PlayerNames();
+            playerNames.playervscomputer = false; ;
             this.Hide();
             playerNames.ShowDialog();
 
@@ -28,12 +26,18 @@ namespace Connect4Coursework
 
         private void PlayerVsComputer(object sender, EventArgs e)
         {
+            playervsComputer = true;
+            ChooseDifficulty chooseDifficulty = new ChooseDifficulty();
+            chooseDifficulty.menu =this;
+            this.Hide();
+            chooseDifficulty.ShowDialog();
+
 
         }
 
         private void ScoresShow(object sender, EventArgs e)
         {
-            var scores = new Scores();
+            Scores scores = new Scores();
             this.Hide();
             scores.Show();
         }
@@ -45,7 +49,7 @@ namespace Connect4Coursework
 
         private void QuitGameOnFormClosed(object sender, FormClosedEventArgs e)
         {
-            Application.ExitThread();
+            Application.Exit();
 
         }
 

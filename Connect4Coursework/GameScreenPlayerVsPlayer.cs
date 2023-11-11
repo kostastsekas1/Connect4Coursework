@@ -1,7 +1,5 @@
-﻿using System.Security.AccessControl;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Connect4Coursework
 {
@@ -10,6 +8,7 @@ namespace Connect4Coursework
 
         private Rectangle[] columns;
         private int[,] board;
+        private Stack<int[,]> BoardStack = new Stack<int[,]>();
         private int turn; // it is 1 for  Player 1 , 2 for player 2 or 2 for computer 
 
         private int hoveredColumn = -1;
@@ -39,8 +38,9 @@ namespace Connect4Coursework
             Score1 = 0;
             Score2 = 0;
             winhow = "";
-
+            BoardStack.Clear();
         }
+
         private void GameScreenPlayerVsPlayer_Load(object sender, EventArgs e)
         {
             if (playerNames != null)
@@ -68,7 +68,7 @@ namespace Connect4Coursework
 
         private void BackToMainMenu(object sender, FormClosedEventArgs e)
         {
-           
+
 
             //save function more
             save();
@@ -82,7 +82,6 @@ namespace Connect4Coursework
             string ScoreStore = string.Format("{0},{2},{1},{3}",
                                 Player1Label.Text, Player2Label.Text, Score1.ToString(), Score2.ToString());
 
-            //string ScoreStore = "player 1,1,player 2,0";
             StringBuilder alldata = new StringBuilder();
 
             if (File.Exists(fullpath))
@@ -129,7 +128,7 @@ namespace Connect4Coursework
                     {
                         //MessageBox.Show(ScoreStore + " here");
                         string headerfile = "Name, Score, Name,Score,";
-                        ScoreStore = headerfile+ ScoreStore ;
+                        ScoreStore = headerfile + ScoreStore;
                         ScoreStore = JsonSerializer.Serialize<string>(ScoreStore);
                         ScoreStore = EncryptDecrypt(ScoreStore);
 
@@ -193,8 +192,10 @@ namespace Connect4Coursework
             int centerY = ClientSize.Height / 3;
 
             int collumnnumber = CollumnNumber(e.Location);
+            
             if (collumnnumber != -1)
             {
+                SaveBoardState();
                 int rownumber = CheckForEmptyRow(collumnnumber);
                 //MessageBox.Show(rownumber.ToString());
 
@@ -221,11 +222,13 @@ namespace Connect4Coursework
                             tokens.FillEllipse(Brushes.Green, centerX - 165 + 47 * collumnnumber, centerY - 165 + 47 * rownumber, 45, 45);
                         }
                     }
+                   
                 }
                 string winnername;
                 int winner = WinnerChecker(turn);
                 if (winner != -1)
                 {
+                    BoardStack.Clear();
                     if (winner == 1)
                     {
                         Player1Score.Text = (Score1 + 1).ToString();
@@ -245,12 +248,13 @@ namespace Connect4Coursework
                     DialogResult GameoverBox = MessageBox.Show(winnername + " won by connecting 4 " + winhow + "\nWant To start a new game?", "Game Over", MessageBoxButtons.YesNo);
                     if (GameoverBox == DialogResult.Yes)
                     {
-                        clearBoard();
+                        clearBoard(true);
                     }
                     else if (GameoverBox == DialogResult.No)
                     {
                         this.Close();
                     }
+
                 }
 
                 if (turn == 1)
@@ -262,6 +266,7 @@ namespace Connect4Coursework
                     turn = 1;
                 }
             }
+            
         }
         #endregion
 
@@ -311,8 +316,8 @@ namespace Connect4Coursework
                 for (int j = 0; j < board.GetLength(1); j++) // Loop through columns
                 {
                     int turns = board[i, j];
-                    //MessageBox.Show(redrawturns.ToString());
-
+                    //MessageBox.Show(turns.ToString());
+                    
                     if (turns == 1)
                     {
                         using (Graphics tokens = this.CreateGraphics())
@@ -337,16 +342,17 @@ namespace Connect4Coursework
             DrawState();
         }
 
-        private void clearBoard()
+        private void clearBoard(bool cleanboard)
         {
             int centerX = ClientSize.Width / 2;
             int centerY = ClientSize.Height / 3;
-
-            Array.Clear(board, 0, board.Length);
-
-            for (int i = 0; i < board.GetLength(0); i++) // Loop through rows
+            if (cleanboard)
             {
-                for (int j = 0; j < board.GetLength(1); j++) // Loop through columns
+                Array.Clear(board, 0, board.Length);
+            }
+            for (int i = 0; i < board.GetLength(0); i++)
+            {
+                for (int j = 0; j < board.GetLength(1); j++)
                 {
                     using (Graphics tokens = this.CreateGraphics())
                     {
@@ -355,6 +361,8 @@ namespace Connect4Coursework
                 }
             }
         }
+
+
 
         #endregion
 
@@ -542,7 +550,30 @@ namespace Connect4Coursework
 
         private void resetButton_Click(object sender, EventArgs e)
         {
-            clearBoard();
+            clearBoard(true);
+        }
+
+        private void UndoButton(object sender, EventArgs e)
+        {
+            if (BoardStack.Count > 0)
+            {
+                clearBoard(true);
+                board = BoardStack.Pop();
+                if (turn == 1)
+                {
+                    turn = 2;
+                }
+                else
+                {
+                    turn = 1;
+                }
+            }
+        }
+        private void SaveBoardState()
+        {
+            int[,] copy = new int[7, 7];
+            Array.Copy(board, copy, board.Length);
+            BoardStack.Push(copy);
         }
     }
 }

@@ -8,12 +8,6 @@ namespace Connect4Coursework
             InitializeComponent();
             playervsComputer = false;
         }
-
-        private void MainMenu_Load(object sender, EventArgs e)
-        {
-
-        }
-
         private void PlayerVSPlayer(object sender, EventArgs e)
         {
             playervsComputer = false;
@@ -28,11 +22,9 @@ namespace Connect4Coursework
         {
             playervsComputer = true;
             ChooseDifficulty chooseDifficulty = new ChooseDifficulty();
-            chooseDifficulty.menu =this;
+            chooseDifficulty.menu = this;
             this.Hide();
             chooseDifficulty.ShowDialog();
-
-
         }
 
         private void ScoresShow(object sender, EventArgs e)
@@ -50,12 +42,6 @@ namespace Connect4Coursework
         private void QuitGameOnFormClosed(object sender, FormClosedEventArgs e)
         {
             Application.Exit();
-
-        }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-
         }
     }
 }

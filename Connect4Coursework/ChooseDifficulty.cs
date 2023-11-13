@@ -32,16 +32,6 @@ namespace Connect4Coursework
             this.Hide();
             playerNames.ShowDialog();
         }
-
-        private void HardButtonClick(object sender, EventArgs e)
-        {
-            PlayerNames playerNames = new PlayerNames();
-            playerNames.playervscomputer = menu.playervsComputer;
-            playerNames.difficulty = "Hard";
-
-            this.Hide();
-            playerNames.ShowDialog();
-        }
         private void BackButton_Click(object sender, EventArgs e)
         {
             this.Hide();

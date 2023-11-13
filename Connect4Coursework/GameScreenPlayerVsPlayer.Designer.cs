@@ -45,7 +45,7 @@
             Player1Label.Font = new Font("Showcard Gothic", 15.75F, FontStyle.Italic, GraphicsUnit.Point);
             Player1Label.Location = new Point(85, 75);
             Player1Label.Name = "Player1Label";
-            Player1Label.Size = new Size(224, 33);
+            Player1Label.Size = new Size(203, 33);
             Player1Label.TabIndex = 0;
             Player1Label.Text = "Player 1\r\n";
             Player1Label.TextAlign = ContentAlignment.MiddleCenter;
@@ -63,7 +63,7 @@
             Player1Score.Font = new Font("Showcard Gothic", 15.75F, FontStyle.Italic, GraphicsUnit.Point);
             Player1Score.Location = new Point(85, 108);
             Player1Score.Name = "Player1Score";
-            Player1Score.Size = new Size(224, 33);
+            Player1Score.Size = new Size(203, 33);
             Player1Score.TabIndex = 2;
             Player1Score.Text = "0";
             Player1Score.TextAlign = ContentAlignment.MiddleCenter;
@@ -73,9 +73,9 @@
             Player2Score.Anchor = AnchorStyles.None;
             Player2Score.BackColor = Color.Transparent;
             Player2Score.Font = new Font("Showcard Gothic", 15.75F, FontStyle.Italic, GraphicsUnit.Point);
-            Player2Score.Location = new Point(634, 108);
+            Player2Score.Location = new Point(660, 108);
             Player2Score.Name = "Player2Score";
-            Player2Score.Size = new Size(224, 33);
+            Player2Score.Size = new Size(198, 33);
             Player2Score.TabIndex = 4;
             Player2Score.Text = "0";
             Player2Score.TextAlign = ContentAlignment.MiddleCenter;
@@ -85,9 +85,9 @@
             Player2Label.Anchor = AnchorStyles.None;
             Player2Label.BackColor = Color.Transparent;
             Player2Label.Font = new Font("Showcard Gothic", 15.75F, FontStyle.Italic, GraphicsUnit.Point);
-            Player2Label.Location = new Point(634, 75);
+            Player2Label.Location = new Point(660, 75);
             Player2Label.Name = "Player2Label";
-            Player2Label.Size = new Size(224, 33);
+            Player2Label.Size = new Size(198, 33);
             Player2Label.TabIndex = 3;
             Player2Label.Text = "Player 2";
             Player2Label.TextAlign = ContentAlignment.MiddleCenter;
@@ -132,7 +132,7 @@
             Controls.Add(Player1Score);
             Controls.Add(Player1Label);
             Name = "GameScreenPlayerVsPlayer";
-            Text = "GameScreenPlayerVsPlayer";
+            Text = "Four In A Row";
             FormClosed += BackToMainMenu;
             Load += GameScreenPlayerVsPlayer_Load;
             Paint += GameScreenPlayerVsPlayer_Paint;

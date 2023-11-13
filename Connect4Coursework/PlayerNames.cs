@@ -44,7 +44,6 @@ namespace Connect4Coursework
             playerVsPlayer.difficulty = difficulty;
             playerVsPlayer.playervsComputer = playervscomputer;
 
-
             playerVsPlayer.Show();
             this.Hide();
         }
@@ -52,7 +51,6 @@ namespace Connect4Coursework
         private void PlayerNames_FormClosing(object sender, FormClosingEventArgs e)
         {
             e.Cancel = true;
-
         }
 
         private bool invalidName(string name1)
@@ -64,10 +62,7 @@ namespace Connect4Coursework
                     return true;
                 }
             }
-
             return false;
         }
-
-       
     }
 }

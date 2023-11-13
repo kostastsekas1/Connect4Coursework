@@ -1,21 +1,19 @@
-﻿using System.Text;
+﻿using System.Data.Common;
+using System.Text;
 using System.Text.Json;
 
 namespace Connect4Coursework
 {
     public partial class GameScreenPlayerVsPlayer : Form
     {
-
         private Rectangle[] columns;
         private int[,] board;
         private Stack<int[,]> BoardStack = new Stack<int[,]>();
-        //private Stack<int[,]> PossibleMoves = new Stack<int[,]>();
 
         private int turn; // it is 1 for  Player 1 , 2 for player 2 or 2 for computer 
 
         private int hoveredColumn = -1;
         private bool isHovering = false;
-
 
         private static int rectangleWidth = 330;  // Width of rectangle
         private static int rectangleHeight = 330; // Height of rectangle
@@ -98,18 +96,14 @@ namespace Connect4Coursework
 
                     string line = reader.ReadToEnd();
                     line = EncryptDecrypt(line);
-                    //MessageBox.Show(line + " herefirst");
-
                     line = line.TrimStart('"');
                     line = line.TrimEnd('"');
 
                     alldata.Append(line);
                     alldata.Append(",");
                 }
-
                 alldata.Append(ScoreStore);
                 ScoreStore = alldata.ToString();
-                // MessageBox.Show(ScoreStore + " herefirst");
                 ScoreStore = JsonSerializer.Serialize<string>(ScoreStore);
                 ScoreStore = EncryptDecrypt(ScoreStore);
 
@@ -119,8 +113,6 @@ namespace Connect4Coursework
 
                     using (StreamWriter writer = new StreamWriter(fileStream))
                     {
-
-
                         writer.Write(ScoreStore);
                     }
                 }
@@ -133,16 +125,15 @@ namespace Connect4Coursework
 
                     using (StreamWriter writer = new StreamWriter(fileStream))
                     {
-                        //MessageBox.Show(ScoreStore + " here");
                         string headerfile = "Name, Score, Name,Score,";
                         ScoreStore = headerfile + ScoreStore;
                         ScoreStore = JsonSerializer.Serialize<string>(ScoreStore);
                         ScoreStore = EncryptDecrypt(ScoreStore);
-
                         writer.Write(ScoreStore);
                     }
                 }
             }
+
             this.Hide();
             MainMenu menu = new MainMenu();
             menu.Show();
@@ -199,12 +190,11 @@ namespace Connect4Coursework
             int centerY = ClientSize.Height / 3;
 
             int collumnnumber = CollumnNumber(e.Location);
-            
+
             if (collumnnumber != -1 && isplayerTurn)
             {
                 SaveBoardState();
                 int rownumber = CheckForEmptyRow(collumnnumber);
-                //MessageBox.Show(rownumber.ToString());
 
                 if (rownumber != -1)
                 {
@@ -213,47 +203,22 @@ namespace Connect4Coursework
                         return;
                     }
                     board[rownumber, collumnnumber] = turn;
-
-                    /*
-                    if (turn == 1)
-                    {
-                        using (Graphics tokens = this.CreateGraphics())
-                        {
-                            tokens.FillEllipse(Brushes.Red, centerX - 165 + 47 * collumnnumber, centerY - 165 + 47 * rownumber, 45, 45);
-                        }
-                    }
-                    else if (turn == 2)
-                    {
-                        using (Graphics tokens = this.CreateGraphics())
-                        {
-                            tokens.FillEllipse(Brushes.Green, centerX - 165 + 47 * collumnnumber, centerY - 165 + 47 * rownumber, 45, 45);
-                        }
-                    }
-                    */
-                   
                 }
 
                 winnerTurn(turn);
 
                 if (playervsComputer)
                 {
-                    //Todo: Make AI move
+
                     if (difficulty == "Easy")
                     {
-                        isplayerTurn =false;
+                        isplayerTurn = false;
                         Random timetowait = new Random();
-                        int time = timetowait.Next(200, 500);
+                        int time = timetowait.Next(200, 800);
                         await Task.Delay(time);
-
-                        RandomMove(GetAllPossibleMoves());
-
+                        RandomMove(GetAllPossibleMoves(board));
                         winnerTurn(2);
                         isplayerTurn = true;
-                    }
-
-                    else if (difficulty == "Hard")
-                    {
-                        //phda me
                     }
                 }
 
@@ -304,66 +269,45 @@ namespace Connect4Coursework
         }
         #endregion
 
-        #region AI implemenation
-        
-        private int[,] GetAllPossibleMoves()
+        #region Easy  AI implemenation
+        private List<int> GetAllPossibleMoves(int[,] board)
         {
-            int[,] AllPossibleMoves = new int[7,7];
+            List<int> legalMoves = new List<int>();
 
-
-            for (int i = 0; i < 7; i++)
+            for (int column = 0; column < board.GetLength(1); column++)
             {
-                for (int j = 0; j < 7; j++)
+                int rowNumber = CheckForEmptyRow(column);
+                if (rowNumber != 0)
                 {
-                    AllPossibleMoves[i, j] = -1;
+                    legalMoves.Add(column);
                 }
             }
-            for (int i = 0; i < board.GetLength(0); i++)
-            {
-                for (int j = 0; j < board.GetLength(1); j++) 
-                {
-                    int turns = board[i, j];
-                    
-                    if (turns == 0)
-                    {
-                        AllPossibleMoves[i, j] = turns;
-                    }
-
-                }
-            }
-            return AllPossibleMoves;
+            return legalMoves;
         }
-
-        private void RandomMove(int[,] PossibleMoves)
+        private void RandomMove(List<int> PossibleMoves)
         {
             bool MoveFound = false;
-            
+
             while (!MoveFound)
             {
                 Random randomCol = new Random();
-                int column =  randomCol.Next(PossibleMoves.GetLength(1)-1);
+                int column = randomCol.Next(PossibleMoves.Count - 1);
                 int rownumber = CheckForEmptyRow(column);
-                
+
                 if (rownumber != 0)
                 {
-                    if (PossibleMoves[rownumber, column] == 0)
+                    if (board[rownumber, column] == 0)
                     {
                         board[rownumber, column] = 2;
                         MoveFound = true;
-                    
+
                     }
                 }
-
             }
-            
         }
-
-
-
-
         #endregion
-        
-        
+
+
         #region Checking if collumn and row can receive token and ReDrawing the state of the board for refreshing with timer and clear board feature
         private int CollumnNumber(Point Mouse)
         {
@@ -405,13 +349,11 @@ namespace Connect4Coursework
                 return;
             }
 
-            for (int i = 0; i < board.GetLength(0); i++) // Loop through rows
+            for (int i = 0; i < board.GetLength(0); i++) // Loop  rows
             {
-                for (int j = 0; j < board.GetLength(1); j++) // Loop through columns
+                for (int j = 0; j < board.GetLength(1); j++) // Loop columns
                 {
                     int turns = board[i, j];
-                    //MessageBox.Show(turns.ToString());
-                    
                     if (turns == 1)
                     {
                         using (Graphics tokens = this.CreateGraphics())
@@ -523,77 +465,64 @@ namespace Connect4Coursework
         }
         #endregion
 
-        #region Winning Condition Handler
-        private bool NumbersEqual(int CheckplayerNumber, int row, int column, Enum checker)
+        #region Winning Condition Handler Reset and  Undo button  and save board state
+        private bool CheckInHowManyInArow(int CheckplayerNumber, int row, int column, CheckDirection checker, int[,] state)
         {
-
+            int tokens = 0;
             if (checker.ToString() == "vertical")
             {
-
                 for (int counter = 0; counter <= 3; counter++)
                 {
-                    if (board[row + counter, column] != CheckplayerNumber)
+                    if (board[row + counter, column] == CheckplayerNumber)
                     {
-
-                        return false;
+                        tokens++;
                     }
                 }
-                winhow = "vertically";
             }
             else if (checker.ToString() == "horizontal")
             {
                 for (int counter = 0; counter <= 3; counter++)
                 {
-                    if (board[row, column + counter] != CheckplayerNumber)
+                    if (board[row, column + counter] == CheckplayerNumber)
                     {
-
-                        return false;
+                        tokens++;
                     }
                 }
-                winhow = "horizontally";
             }
             else if (checker.ToString() == "diagonalLeft")
             {
                 for (int counter = 0; counter <= 3; counter++)
                 {
-                    if (board[row + counter, column + counter] != CheckplayerNumber)
+                    if (board[row + counter, column + counter] == CheckplayerNumber)
                     {
-
-                        return false;
+                        tokens++;
                     }
                 }
-                winhow = "diagonally to the left";
             }
             else if (checker.ToString() == "diagonalRight")
             {
                 for (int counter = 0; counter <= 3; counter++)
                 {
-                    if (board[row + counter, column - counter] != CheckplayerNumber)
+                    if (board[row + counter, column - counter] == CheckplayerNumber)
                     {
-
-                        return false;
+                        tokens++;
                     }
                 }
-                winhow = "diagonally to the right";
             }
-
-
-
-
-            return true;
-
+            return tokens >= 4;
         }
 
         private int WinnerChecker(int CheckingPlayerNumber)
         {
+
             //Vertical
             for (int row = 0; row < board.GetLength(0) - 3; row++)
             {
                 for (int column = 0; column < board.GetLength(1); column++)
                 {
-
-                    if (NumbersEqual(CheckingPlayerNumber, row, column, CheckDirection.vertical))
+                    if (CheckInHowManyInArow(CheckingPlayerNumber, row, column, CheckDirection.vertical, board))
                     {
+                        winhow = "vertically";
                         return CheckingPlayerNumber;
                     }
                 }
@@ -603,9 +532,9 @@ namespace Connect4Coursework
             {
                 for (int column = 0; column < board.GetLength(1) - 3; column++)
                 {
-
-                    if (NumbersEqual(CheckingPlayerNumber, row, column, CheckDirection.horizontal))
+                    if (CheckInHowManyInArow(CheckingPlayerNumber, row, column, CheckDirection.horizontal, board))
                     {
+                        winhow = "horizontally";
                         return CheckingPlayerNumber;
                     }
                 }
@@ -615,9 +544,9 @@ namespace Connect4Coursework
             {
                 for (int column = 0; column < board.GetLength(1) - 3; column++)
                 {
-
-                    if (NumbersEqual(CheckingPlayerNumber, row, column, CheckDirection.diagonalLeft))
+                    if (CheckInHowManyInArow(CheckingPlayerNumber, row, column, CheckDirection.diagonalLeft, board))
                     {
+                        winhow = "diagonally to the left";
                         return CheckingPlayerNumber;
                     }
                 }
@@ -628,19 +557,15 @@ namespace Connect4Coursework
             {
                 for (int column = 3; column < board.GetLength(1); column++)
                 {
-
-                    if (NumbersEqual(CheckingPlayerNumber, row, column, CheckDirection.diagonalRight))
+                    if (CheckInHowManyInArow(CheckingPlayerNumber, row, column, CheckDirection.diagonalRight, board))
                     {
+                        winhow = "diagonally to the right";
                         return CheckingPlayerNumber;
                     }
                 }
             }
-
-
             return -1;
-
         }
-        #endregion
 
         private void resetButton_Click(object sender, EventArgs e)
         {
@@ -655,9 +580,12 @@ namespace Connect4Coursework
                 board = BoardStack.Pop();
                 if (turn == 1)
                 {
-                    turn = 2;
+                    if (!playervsComputer)
+                    {
+                        turn = 2;
+                    }
                 }
-                else
+                else if (turn == 2)
                 {
                     turn = 1;
                 }
@@ -669,5 +597,6 @@ namespace Connect4Coursework
             Array.Copy(board, copy, board.Length);
             BoardStack.Push(copy);
         }
+        #endregion
     }
 }

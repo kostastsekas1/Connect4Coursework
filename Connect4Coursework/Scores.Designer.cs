@@ -88,7 +88,6 @@
             Controls.Add(label1);
             Name = "Scores";
             Text = "Scores";
-            FormClosing += Scores_FormClosing;
             Load += Scores_Load;
             ResumeLayout(false);
         }

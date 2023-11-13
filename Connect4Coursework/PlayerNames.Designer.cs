@@ -121,7 +121,7 @@
             MinimumSize = new Size(406, 239);
             Name = "PlayerNames";
             StartPosition = FormStartPosition.CenterParent;
-            Text = "PlayerNames";
+            Text = "Player Names";
             FormClosing += PlayerNames_FormClosing;
             Load += PlayerNames_Load;
             ResumeLayout(false);

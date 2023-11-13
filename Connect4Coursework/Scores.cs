@@ -26,11 +26,6 @@ namespace Connect4Coursework
             InitializeComponent();
         }
 
-        private void Scores_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            
-        }
-
         private void Scores_Load(object sender, EventArgs e)
         {
             int centerX = ClientSize.Width / 2 - panel1.Width / 2;
@@ -72,15 +67,12 @@ namespace Connect4Coursework
                     panel1.RowCount += 1;
                     for (int j = i; j < i+4; j++)
                     {
-                        // Create a Label for each data item
                         Label label = new Label();
                         label.Text = scores[j];
                         label.Font = new Font("Showcard Gothic", 14F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point);
                         label.TextAlign = ContentAlignment.MiddleCenter;
 
                         label.Dock = DockStyle.Fill;
-
-                        // Add the Label to the TableLayoutPanel
 
                         panel1.Controls.Add(label, j % 4, panel1.RowCount - 1);
                     }
@@ -91,7 +83,6 @@ namespace Connect4Coursework
                 label1.Text = "No Data yet ";
             }
         }
-
         private string EncryptDecrypt(string data)
         {
             string EncryptedDecryptedData = "";

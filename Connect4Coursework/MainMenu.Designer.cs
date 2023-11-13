@@ -48,7 +48,6 @@ namespace Connect4Coursework
             label1.TabIndex = 0;
             label1.Text = "Four In A row";
             label1.TextAlign = ContentAlignment.TopCenter;
-            label1.Click += label1_Click;
             // 
             // button1
             // 
@@ -133,12 +132,11 @@ namespace Connect4Coursework
             Controls.Add(button2);
             Controls.Add(button1);
             Controls.Add(label1);
-            Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point);
+            Font = new Font("Showcard Gothic", 20.25F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point);
             Name = "MainMenu";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = " Main Menu";
+            Text = "Four In A Row";
             FormClosed += QuitGameOnFormClosed;
-            Load += MainMenu_Load;
             ResumeLayout(false);
         }
 

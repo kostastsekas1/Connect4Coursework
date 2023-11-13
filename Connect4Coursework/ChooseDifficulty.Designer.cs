@@ -30,7 +30,6 @@
         {
             label1 = new Label();
             button1 = new Button();
-            button2 = new Button();
             StartButton = new Button();
             SuspendLayout();
             // 
@@ -52,26 +51,13 @@
             button1.BackColor = Color.MediumTurquoise;
             button1.FlatStyle = FlatStyle.Flat;
             button1.Font = new Font("Showcard Gothic", 14.25F, FontStyle.Bold, GraphicsUnit.Point);
-            button1.Location = new Point(120, 83);
+            button1.Location = new Point(120, 121);
             button1.Name = "button1";
             button1.Size = new Size(131, 48);
             button1.TabIndex = 1;
             button1.Text = "Easy";
             button1.UseVisualStyleBackColor = false;
             button1.Click += EasyButtonClick;
-            // 
-            // button2
-            // 
-            button2.BackColor = Color.MediumTurquoise;
-            button2.FlatStyle = FlatStyle.Flat;
-            button2.Font = new Font("Showcard Gothic", 14.25F, FontStyle.Bold, GraphicsUnit.Point);
-            button2.Location = new Point(120, 169);
-            button2.Name = "button2";
-            button2.Size = new Size(131, 48);
-            button2.TabIndex = 2;
-            button2.Text = "Hard";
-            button2.UseVisualStyleBackColor = false;
-            button2.Click += HardButtonClick;
             // 
             // StartButton
             // 
@@ -98,14 +84,13 @@
             BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(390, 305);
             Controls.Add(StartButton);
-            Controls.Add(button2);
             Controls.Add(button1);
             Controls.Add(label1);
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "ChooseDifficulty";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "ChooseDifficulty";
+            Text = "Choose Difficulty";
             FormClosing += ChooseDifficulty_FormClosing;
             ResumeLayout(false);
         }
@@ -114,7 +99,6 @@
 
         private Label label1;
         private Button button1;
-        private Button button2;
         private Button StartButton;
     }
 }
